@@ -1,17 +1,13 @@
 Package: tabieone
 Type: Package
-Title: GPT API 키 암호화 및 질문 편의 도구
+Title: Simple GPT Helper Package
 Version: 0.1.0
-Authors@R: c(
-    person("park", "gyusic", email = "pkskvv@gmail.com", role = c("aut", "cre"))
-)
-Description: 
-    개인 API 키를 안전하게 암호화하여 저장하고, 복호화하여 사용할 수 있게 돕는 편의 기능 제공.
-    R 콘솔 스타일로 GPT에게 자연스럽게 질문할 수 있도록 지원합니다.
+Authors@R:
+    person("gyusic", "park", email = "pkskvv@gmail.com", role = c("aut", "cre"))
+Description: Provides simple encryption for API keys and easy GPT-based question handling via console.
 License: MIT
 Encoding: UTF-8
 LazyData: true
-InstFiles: inst/extdata/encrypted_key.bin
 RoxygenNote: 7.3.2
 Imports:
     httr,
