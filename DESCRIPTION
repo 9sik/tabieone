@@ -2,9 +2,15 @@ Package: tabieone
 Type: Package
 Title: Simple GPT Query and API Key Management
 Version: 0.1.0
-Authors@R: c(
-    person(given = "gyusic", family = "park", email = "pkskvv@gmail.com", role = c("aut", "cre"))
-)
+Authors@R: 
+    c(
+      person(
+        given = "gyusic",
+        family = "park",
+        email = "pkskvv@gmail.com",
+        role = c("aut", "cre")
+      )
+    )
 Description: Provides simple functions to encrypt and load API keys, 
     and to interact with the GPT API easily like using the R console.
 License: MIT
