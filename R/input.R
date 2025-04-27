@@ -5,24 +5,15 @@
 decrypt_api_key <- function(password) {
   library(sodium)
 
-  # 설치된 경로에서 파일 읽기 시도
   encrypted_path <- system.file("extdata", "encrypted_key.bin", package = "tabieone")
-  if (encrypted_path == "") {
-    # 설치된 패키지 경로에 없으면 개발 중 경로 사용
+  if (encrypted_path == "") {        # 개발 중 경로 fallback
     encrypted_path <- file.path("inst", "extdata", "encrypted_key.bin")
   }
 
-  encrypted_data <- readRDS(encrypted_path)
-
-  encrypted_key <- encrypted_data$encrypted_key
-  salt <- encrypted_data$salt
-  nonce <- encrypted_data$nonce
-
-  password_raw <- charToRaw(password)
-
-  decrypted_key <- simple_decrypt(encrypted_key, password_raw, salt, nonce)
-
-  return(rawToChar(decrypted_key))
+  cipher <- readRDS(encrypted_path)         # 암호화된 바이너리 읽기
+  key    <- sha256(charToRaw(password))      # 비밀번호로 키 생성
+  plain  <- data_decrypt(cipher, key)        # 복호화
+  rawToChar(plain)                           # 문자로 변환 후 반환
 }
 
 #' 복호화 후 환경변수 등록 함수
