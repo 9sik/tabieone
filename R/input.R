@@ -1,26 +1,54 @@
-# R/input.R
-
-#' API 키 복호화 및 환경변수 설정 함수
+#' API 키 암호화 함수
 #'
-#' @param password 비밀번호 문자열
+#' @param key 암호화할 API 키 문자열
+#' @param password 암호화에 사용할 비밀번호 문자열
+#' @export
+encrypt_api_key <- function(key, password) {
+  library(sodium)
+
+  key_raw <- charToRaw(key)
+  password_raw <- charToRaw(password)
+
+  salt <- randombytes(16)
+  nonce <- randombytes(24)
+
+  encrypted_key <- simple_encrypt(key_raw, password_raw, salt, nonce)
+
+  if (!dir.exists(file.path("inst", "extdata"))) {
+    dir.create(file.path("inst", "extdata"), recursive = TRUE)
+  }
+
+  saveRDS(encrypted_key, file = file.path("inst", "extdata", "encrypted_key.bin"))
+
+  return(encrypted_key)
+}
+
+#' API 키 복호화 함수
+#'
+#' @param password 복호화에 사용할 비밀번호 문자열
+#' @export
+decrypt_api_key <- function(password) {
+  library(sodium)
+
+  encrypted_key <- readRDS(file.path("inst", "extdata", "encrypted_key.bin"))
+
+  decrypted_key <- simple_decrypt(encrypted_key, charToRaw(password))
+
+  return(rawToChar(decrypted_key))
+}
+
+#' 복호화 후 환경변수 등록 함수
+#'
+#' @param password 복호화에 사용할 비밀번호 문자열
 #' @export
 input <- function(password) {
-  # sodium 패키지 로드
-  if (!requireNamespace("sodium", quietly = TRUE)) {
-    stop("패키지 'sodium'이 설치되어 있지 않습니다. install.packages('sodium') 해주세요.")
-  }
-  # 설치된 라이브러리 경로에서 encrypted_key.bin 찾기
-  encrypted_path <- system.file("extdata", "encrypted_key.bin", package = "tabieone")
-  if (encrypted_path == "") {
-    stop("❌ encrypted_key.bin 파일을 찾을 수 없습니다. encrypt_api_key()를 먼저 실행하세요.")
-  }
-  # 파일 읽고 복호화
-  encrypted <- readRDS(encrypted_path)
-  key_raw    <- sodium::sha256(charToRaw(password))
-  decrypted  <- sodium::data_decrypt(encrypted, key_raw)
-  api_key    <- rawToChar(decrypted)
+  library(sodium)
 
-  # 환경변수에 저장
-  Sys.setenv(OPENAI_API_KEY = api_key)
-  message("✅ API 키 복호화 및 환경변수 설정 완료")
+  encrypted_key <- readRDS(file.path("inst", "extdata", "encrypted_key.bin"))
+
+  decrypted_key <- simple_decrypt(encrypted_key, charToRaw(password))
+
+  Sys.setenv(OPENAI_API_KEY = rawToChar(decrypted_key))
+
+  message("✅ API 키 복호화 완료 및 OPENAI_API_KEY 환경변수에 설정 완료!")
 }

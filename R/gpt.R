@@ -43,7 +43,7 @@ gpt <- function(question, history = 1, data = 1) {
     body = list(
       model = "gpt-4o",
       messages = list(
-        list(role = "system", content = "순차적으로, top-down 논리구조로 간단한 코드 작성, 코드만 출력함(한글설명 안함), r콘솔처럼 보이게 출력"),
+        list(role = "system", content = "Write code sequentially with a top-down logical structure, keep it simple and minimal, respond only to the input content, output only the code (no Korean explanations, no comments), and format it to look like the R console."),
         list(role = "user", content = full_prompt)
       )
     )
