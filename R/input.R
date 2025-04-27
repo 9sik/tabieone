@@ -9,21 +9,26 @@ encrypt_api_key <- function(key, password) {
   key_raw <- charToRaw(key)
   password_raw <- charToRaw(password)
 
+  # salt와 nonce 생성
   salt <- randombytes(16)
   nonce <- randombytes(24)
 
+  # 키 암호화
   encrypted_key <- simple_encrypt(key_raw, password_raw, salt, nonce)
 
-  # 개발환경(inst/extdata) 경로 지정
-  inst_path <- file.path("inst", "extdata")
-  if (!dir.exists(inst_path)) {
-    dir.create(inst_path, recursive = TRUE)
+  # inst/extdata 폴더가 없으면 생성
+  if (!dir.exists(file.path("inst", "extdata"))) {
+    dir.create(file.path("inst", "extdata"), recursive = TRUE)
   }
 
-  saveRDS(list(data = encrypted_key, salt = salt, nonce = nonce),
-          file = file.path(inst_path, "encrypted_key.bin"))
+  # salt, nonce도 함께 저장 (복호화에 필요)
+  saveRDS(list(
+    encrypted_key = encrypted_key,
+    salt = salt,
+    nonce = nonce
+  ), file = file.path("inst", "extdata", "encrypted_key.bin"))
 
-  message("✅ 암호화 완료: inst/extdata/encrypted_key.bin 에 저장되었습니다.")
+  message("✅ API 키가 성공적으로 암호화되어 저장되었습니다.")
 }
 
 #' API 키 복호화 함수
@@ -33,20 +38,17 @@ encrypt_api_key <- function(key, password) {
 decrypt_api_key <- function(password) {
   library(sodium)
 
-  # 설치된 경로 확인
-  encrypted_path <- system.file("extdata", "encrypted_key.bin", package = "tabieone")
-  if (encrypted_path == "") {
-    # 개발 중일 때 fallback
-    encrypted_path <- file.path(getwd(), "inst", "extdata", "encrypted_key.bin")
-  }
+  # 저장된 데이터 읽기
+  encrypted_data <- readRDS(file.path("inst", "extdata", "encrypted_key.bin"))
 
-  if (!file.exists(encrypted_path)) {
-    stop("❗ 암호화된 키 파일(encrypted_key.bin)을 찾을 수 없습니다.")
-  }
+  encrypted_key <- encrypted_data$encrypted_key
+  salt <- encrypted_data$salt
+  nonce <- encrypted_data$nonce
 
-  encrypted_data <- readRDS(encrypted_path)
+  password_raw <- charToRaw(password)
 
-  decrypted_key <- simple_decrypt(encrypted_data$data, charToRaw(password))
+  # 복호화
+  decrypted_key <- simple_decrypt(encrypted_key, password_raw, salt, nonce)
 
   return(rawToChar(decrypted_key))
 }
@@ -58,5 +60,5 @@ decrypt_api_key <- function(password) {
 input <- function(password) {
   api_key <- decrypt_api_key(password)
   Sys.setenv(OPENAI_API_KEY = api_key)
-  message("✅ API 키 복호화 및 환경변수 OPENAI_API_KEY에 설정 완료!")
+  message("✅ API 키 복호화 완료 및 OPENAI_API_KEY 환경변수에 설정 완료!")
 }
