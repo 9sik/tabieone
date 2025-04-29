@@ -2,7 +2,6 @@
 #'
 #' @export
 ask1 <- function() {
-  cat("")
   lines <- character()
   repeat {
     line <- readline("> ")
