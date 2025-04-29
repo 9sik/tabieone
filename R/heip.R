@@ -1,10 +1,10 @@
-#' GPT 질문 함수
+#' GPT 질문 함수 (이제 heip 이름으로)
 #'
 #' @param question 질문 문자열
 #' @param history 콘솔 기록 첨부 여부 (0/1)
 #' @param data 데이터프레임 첨부 여부 (0/1)
 #' @export
-gpt <- function(question, history = 1, data = 1) {
+heip <- function(question, history = 1, data = 1) {
   library(httr)
   library(jsonlite)
 

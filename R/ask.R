@@ -1,7 +1,8 @@
+#' 간단 질문 함수
 #'
 #' @export
 ask <- function() {
   input <- readline(prompt = "> ")
-  input <- paste0('"', input, '"')   # 입력 자동 따옴표 감싸기
-  gpt(input, history = 0, data = 0)
+  input <- paste0('"', input, '"')   # 입력을 자동으로 따옴표 감싸기
+  heip(input, history = 0, data = 0)
 }
