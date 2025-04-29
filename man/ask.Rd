@@ -2,10 +2,17 @@
 % Please edit documentation in R/ask.R
 \name{ask}
 \alias{ask}
-\title{간단 질문 함수}
+\title{GPT 질문 함수 (이제 heip 이름으로)}
 \usage{
-ask()
+ask(question, history = 1, data = 1)
+}
+\arguments{
+\item{question}{질문 문자열}
+
+\item{history}{콘솔 기록 첨부 여부 (0/1)}
+
+\item{data}{데이터프레임 첨부 여부 (0/1)}
 }
 \description{
-간단 질문 함수
+GPT 질문 함수 (이제 heip 이름으로)
 }
