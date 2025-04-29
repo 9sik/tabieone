@@ -2,7 +2,7 @@
 #'
 #' @export
 ask1 <- function() {
-  cat("여러 줄 입력하세요. (빈 줄만 입력하면 끝)\n")
+  cat("")
   lines <- character()
   repeat {
     line <- readline("> ")
