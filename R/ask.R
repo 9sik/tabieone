@@ -1,40 +1,73 @@
-#' GPT 질문 함수 (이제 heip 이름으로)
+#' GPT 질문 함수 (완전체 버전)
 #'
 #' @param question 질문 문자열
 #' @param history 콘솔 기록 첨부 여부 (0/1)
-#' @param data 데이터프레임 첨부 여부 (0/1)
+#' @param data Environment 개괄정보 첨부 여부 (0/1)
 #' @export
 ask <- function(question, history = 1, data = 1) {
   library(httr)
   library(jsonlite)
 
+  # 최근 콘솔 입력 저장
   console_text <- ""
   if (history == 1) {
     history_file <- tempfile()
     savehistory(history_file)
-    console_text <- paste0(tail(readLines(history_file, warn = FALSE), 10), collapse = "\n")
-    console_text <- paste("[🧾 최근 콘솔 입력 10줄]\n", console_text)
-  }
-
-  df_text <- ""
-  if (data == 1) {
-    for (df_name in ls(envir = .GlobalEnv)) {
-      obj <- get(df_name, envir = .GlobalEnv)
-      if (is.data.frame(obj)) {
-        df_head <- capture.output(head(obj, 3))
-        df_text <- paste0(df_text, "\n▶ ", df_name, "\n", paste(df_head, collapse = "\n"))
-      }
+    console_lines <- tryCatch(
+      tail(readLines(history_file, warn = FALSE), 10),
+      error = function(e) character(0)
+    )
+    console_text <- if (length(console_lines) > 0) {
+      paste("[🧾 최근 콘솔 입력 10줄]\n", paste(console_lines, collapse = "\n"))
+    } else {
+      ""
     }
-    df_text <- paste("\n\n[📊 데이터프레임 head(3)]\n", df_text)
   }
 
+  # Environment 개괄 정보 저장
+  env_text <- ""
+  if (data == 1) {
+    env_summary <- character()
+    for (obj_name in ls(envir = .GlobalEnv)) {
+      obj <- get(obj_name, envir = .GlobalEnv)
+      summary_text <- tryCatch({
+        if (is.data.frame(obj)) {
+          paste0("data.frame, dim=", paste(dim(obj), collapse = "x"))
+        } else if (is.matrix(obj)) {
+          paste0("matrix, dim=", paste(dim(obj), collapse = "x"))
+        } else if (is.list(obj)) {
+          paste0("list, length=", length(obj))
+        } else if (is.vector(obj) && !is.list(obj) && !is.matrix(obj)) {
+          paste0("vector, length=", length(obj))
+        } else if (is.numeric(obj) || is.character(obj) || is.logical(obj)) {
+          paste0("scalar, value=", toString(obj))
+        } else if (is.function(obj)) {
+          "function"
+        } else if (is.environment(obj)) {
+          "environment"
+        } else {
+          paste("other type:", class(obj)[1])
+        }
+      }, error = function(e) {
+        "unreadable object"
+      })
+
+      env_summary <- c(env_summary, paste0("▶ ", obj_name, ": ", summary_text))
+    }
+    if (length(env_summary) > 0) {
+      env_text <- paste("\n\n[📦 Environment 요약정보]\n", paste(env_summary, collapse = "\n"))
+    }
+  }
+
+  # 최종 프롬프트 만들기
   full_prompt <- paste0(
     console_text,
-    df_text,
+    env_text,
     "\n\n[🧠 질문]\n",
     question
   )
 
+  # GPT API 호출
   res <- POST(
     url = "https://api.openai.com/v1/chat/completions",
     add_headers(Authorization = paste("Bearer", Sys.getenv("OPENAI_API_KEY"))),
@@ -63,6 +96,7 @@ Treat them like normal R functions.
     )
   )
 
+  # 응답 출력
   result <- fromJSON(content(res, as = "text", encoding = "UTF-8"), simplifyVector = FALSE)
   cat(result$choices[[1]]$message$content, "\n")
 }

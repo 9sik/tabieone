@@ -2,7 +2,7 @@
 % Please edit documentation in R/ask.R
 \name{ask}
 \alias{ask}
-\title{GPT 질문 함수 (이제 heip 이름으로)}
+\title{GPT 질문 함수 (완전체 버전)}
 \usage{
 ask(question, history = 1, data = 1)
 }
@@ -11,8 +11,8 @@ ask(question, history = 1, data = 1)
 
 \item{history}{콘솔 기록 첨부 여부 (0/1)}
 
-\item{data}{데이터프레임 첨부 여부 (0/1)}
+\item{data}{Environment 개괄정보 첨부 여부 (0/1)}
 }
 \description{
-GPT 질문 함수 (이제 heip 이름으로)
+GPT 질문 함수 (완전체 버전)
 }
