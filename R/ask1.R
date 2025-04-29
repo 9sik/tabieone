@@ -1,3 +1,6 @@
+#' 여러 줄 입력을 받아 ask로 전달하는 함수
+#'
+#' @export
 ask1 <- function() {
   cat("여러 줄 입력하세요. (빈 줄만 입력하면 끝)\n")
   lines <- character()
