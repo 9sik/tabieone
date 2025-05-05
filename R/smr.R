@@ -36,7 +36,6 @@ smr <- function(data) {
   }
 
   # 질문 받기
-  cat("💬 분석 질문을 입력하세요 (입력 완료 시 엔터 두 번):\n")
   lines <- character()
   repeat {
     line <- readline("> ")
