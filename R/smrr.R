@@ -16,7 +16,7 @@ smrr <- function(n = 20) {
   }
 
   # 2. 질문 입력 (줄바꿈으로 계속, 빈 줄 입력 시 종료)
-  cat("❓ GPT에게 보낼 질문을 입력하세요. (빈 줄 입력 시 종료)\n")
+  cat("")
   lines <- character()
   repeat {
     line <- readline("> ")
