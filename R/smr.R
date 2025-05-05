@@ -36,6 +36,7 @@ smr <- function(data) {
   }
 
   # 질문 받기
+  cat("")
   lines <- character()
   repeat {
     line <- readline("> ")
