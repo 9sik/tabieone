@@ -4,7 +4,7 @@
 \alias{smr}
 \title{요약 출력 없이 GPT에 데이터 요약과 질문만 전송하는 smr()}
 \usage{
-smr(data, max_lines = 50)
+smr(data, max_lines = 100)
 }
 \arguments{
 \item{data}{c("x", "y") 형식으로 데이터 객체 이름 전달}

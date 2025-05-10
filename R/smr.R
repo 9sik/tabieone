@@ -3,7 +3,7 @@
 #' @param data c("x", "y") 형식으로 데이터 객체 이름 전달
 #' @param max_lines 각 블록별 최대 출력 줄 수 제한
 #' @export
-smr <- function(data, max_lines = 50) {
+smr <- function(data, max_lines = 100) {
   data_names <- as.character(substitute(data))
   if (length(data_names) == 1 && grepl("^c\\(", data_names)) {
     data_names <- gsub("^c\\(|\\)$", "", data_names)
