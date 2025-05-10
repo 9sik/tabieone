@@ -4,11 +4,17 @@
 \alias{smr}
 \title{데이터 개괄요약 + 질문을 GPT로 전달하는 함수}
 \usage{
-smr(data)
+smr(data, max_lines = 50)
+
+smr(data, max_lines = 50)
 }
 \arguments{
 \item{data}{하나 또는 여러 개의 데이터프레임 이름 (벡터 형식 가능)}
+
+\item{max_lines}{각 블록별 최대 출력 줄 수 (기본값: 50줄, 초과 시 생략)}
 }
 \description{
+데이터 개괄요약 + 질문을 GPT로 전달하는 함수
+
 데이터 개괄요약 + 질문을 GPT로 전달하는 함수
 }
